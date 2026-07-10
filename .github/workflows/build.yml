@@ -7,16 +7,31 @@ jobs:
     name: Build Kernel
     runs-on: ubuntu-22.04
     steps:
-      - name: Build
-        uses: dabao1955/kernel_build_action@main
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
         with:
-          kernel-url: https://github.com
-          kernel-branch: sixteen
-          config: raphael_defconfig
-          arch: arm64
-          aosp-gcc: true
-          aosp-clang: true
-          disable-lto: true
-          ksu: true
-          ksu-version: main
-          anykernel3: true
+          repository: SOVIET-ANDROID/kernel_xiaomi_raphael
+          ref: sixteen
+          path: kernel
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bc bison build-essential ccache curl flex g++-multilib gcc-multilib git gnupg gperf lib32readline-dev lib32z1-dev liblz4-tool libncurses5-dev libsdl1.2-dev libssl-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev
+
+      - name: Download Proton Clang Compiler
+        run: |
+          git clone --depth=1 https://github.com clang
+
+      - name: Build Kernel
+        run: |
+          export PATH="$(pwd)/clang/bin:$PATH"
+          cd kernel
+          make O=out ARCH=arm64 raphael_defconfig
+          make -j$(nproc --all) O=out ARCH=arm64 CC=clang CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- Image.gz-dtb
+
+      - name: Upload Kernel Image Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: K20Pro-Kernel-Image
+          path: kernel/out/arch/arm64/boot/Image.gz-dtb
