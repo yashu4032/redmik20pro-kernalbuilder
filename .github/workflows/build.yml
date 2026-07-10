@@ -1,0 +1,22 @@
+name: Build Redmi K20 Pro Kernel
+on:
+  workflow_dispatch:
+
+jobs:
+  build-kernel:
+    name: Build Kernel
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Build
+        uses: dabao1955/kernel_build_action@main
+        with:
+          kernel-url: https://github.com
+          kernel-branch: sixteen
+          config: raphael_defconfig
+          arch: arm64
+          aosp-gcc: true
+          aosp-clang: true
+          disable-lto: true
+          ksu: true
+          ksu-version: main
+          anykernel3: true
