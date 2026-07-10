@@ -7,17 +7,17 @@ jobs:
     name: Build Kernel
     runs-on: ubuntu-22.04
     steps:
-      - name: Checkout Source Code
+      - name: Checkout Build Repository
         uses: actions/checkout@v4
-        with:
-          repository: SOVIET-ANDROID/kernel_xiaomi_raphael
-          ref: sixteen
-          path: kernel
 
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y bc bison build-essential ccache curl flex g++-multilib gcc-multilib git gnupg gperf lib32readline-dev lib32z1-dev liblz4-tool libncurses5-dev libsdl1.2-dev libssl-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev
+          sudo apt-get install -y bc bison build-essential ccache curl flex g++-multilib gcc-multilib git gnupg gperf lib32readline-dev lib32z1-dev liblz4-tool libncurses5-dev libsdl1.2-dev libssl-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev python2
+
+      - name: Download Kernel Source Code
+        run: |
+          git clone --depth=1 https://github.com -b lineage-21 kernel
 
       - name: Download Proton Clang Compiler
         run: |
